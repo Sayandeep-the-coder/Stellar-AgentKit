@@ -3,6 +3,8 @@ import { StellarLiquidityContractTool } from "./tools/contract";
 import { StellarDexTool } from "./tools/dex";
 import { StellarContractTool } from "./tools/stake";
 import { stellarSendPaymentTool, stellarGetBalanceTool, stellarGetAccountInfoTool } from "./tools/stellar";
+import { StellarTransactionHistoryTool } from "./tools/transactions";
+import type { TransactionRecord, OperationRecord } from "./tools/transactions";
 import { 
   AgentClient, 
   AgentConfig,
@@ -30,6 +32,8 @@ export type {
   RouteQuote,
   SwapBestRouteParams,
   SwapBestRouteResult,
+  TransactionRecord,
+  OperationRecord,
 };
 export const stellarTools = [
   bridgeTokenTool,
@@ -38,5 +42,6 @@ export const stellarTools = [
   StellarContractTool,
   stellarSendPaymentTool,
   stellarGetBalanceTool,
-  stellarGetAccountInfoTool
+  stellarGetAccountInfoTool,
+  StellarTransactionHistoryTool,
 ];

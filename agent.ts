@@ -14,6 +14,14 @@ import {
   type SwapBestRouteParams,
   type SwapBestRouteResult,
 } from "./lib/dex";
+import {
+  getTransactionHistory as libGetTransactionHistory,
+  getOperationHistory as libGetOperationHistory,
+  type TransactionRecord,
+  type OperationRecord,
+  type TransactionHistoryParams,
+  type OperationHistoryParams,
+} from "./lib/transactions";
 import { bridgeTokenTool } from "./tools/bridge";
 import { stellarGetBalanceTool, stellarGetAccountInfoTool } from "./tools/stellar";
 import {
@@ -67,6 +75,10 @@ export type {
   RouteQuote,
   SwapBestRouteParams,
   SwapBestRouteResult,
+  TransactionRecord,
+  OperationRecord,
+  TransactionHistoryParams,
+  OperationHistoryParams,
 };
 
 export class AgentClient {
@@ -281,6 +293,60 @@ export class AgentClient {
         },
         params
       );
+    },
+  };
+
+  /**
+   * Stellar account transaction and operation history.
+   *
+   * These methods use the Horizon REST API and are strictly read-only —
+   * no private key is required.
+   *
+   * @example
+   * // Get the 5 most recent transactions
+   * const txs = await agent.transactions.getTransactions({ limit: 5 });
+   *
+   * // Get the 10 most recent operations for a specific account
+   * const ops = await agent.transactions.getOperations({
+   *   publicKey: "GABC...",
+   *   limit: 10,
+   * });
+   */
+  public transactions = {
+    /**
+     * Return recent transactions for an account.
+     * Defaults to the client's configured publicKey and network.
+     */
+    getTransactions: async (
+      params?: Partial<TransactionHistoryParams>
+    ): Promise<TransactionRecord[]> => {
+      const publicKey = params?.publicKey || this.publicKey;
+      if (!publicKey) {
+        throw new Error("Public key is required to fetch transaction history.");
+      }
+      return libGetTransactionHistory({
+        ...params,
+        publicKey,
+        network: params?.network ?? this.network,
+      });
+    },
+
+    /**
+     * Return recent operations for an account.
+     * Defaults to the client's configured publicKey and network.
+     */
+    getOperations: async (
+      params?: Partial<OperationHistoryParams>
+    ): Promise<OperationRecord[]> => {
+      const publicKey = params?.publicKey || this.publicKey;
+      if (!publicKey) {
+        throw new Error("Public key is required to fetch operation history.");
+      }
+      return libGetOperationHistory({
+        ...params,
+        publicKey,
+        network: params?.network ?? this.network,
+      });
     },
   };
 
